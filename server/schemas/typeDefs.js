@@ -13,7 +13,7 @@ const typeDefs = gql`
     type Book {
         bookId: ID!
         authors: [String]
-        description: String!
+        description: String
         title: String!
         image: String
         link: String
@@ -27,7 +27,7 @@ const typeDefs = gql`
     input BookInput {
         bookId: ID!
         authors: [String]
-        description: String!
+        description: String
         title: String!
         image: String
         link: String
@@ -35,6 +35,7 @@ const typeDefs = gql`
 
     type Query {
         me: User
+        users: User
     }
 
     type Mutation {

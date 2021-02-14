@@ -14,24 +14,28 @@ const resolvers = {
 
             throw new AuthenticationError('Not logged in');
         },
+        users: async () => {
+            return User.find()
+                .select('-__v -password')
+        }
     },
 
     Mutation: {
-        createUser: async (parent, args) => {
+        addUser: async (parent, args) => {
             const user = await User.create(args);
             const token = signToken(user);
 
             return { token, user };
         },
 
-        login: async (parent, {body}) => {
-            const user = await User.findOne({ $or: [{ username: body.username }, { email: body.email }] });
+        login: async (parent, {email, password}) => {
+            const user = await User.findOne({ email });
 
             if (!user) {
                 throw new AuthenticationError('Incorrect credentials');
             }
 
-            const correctPw = await user.isCorrectPassword(body.password);
+            const correctPw = await user.isCorrectPassword(password);
 
             if (!correctPw) {
                 throw new AuthenticationError('Incorrect credentials');
@@ -59,7 +63,7 @@ const resolvers = {
             if (context.user) {
                 const updatedUser = await User.findOneAndUpdate(
                     { _id: context.user._id},
-                    { $pull: { saveBook: { bookId }}},
+                    { $pull: { savedBooks: { bookId }}},
                     { new: true}
                 );
                 return updatedUser;
